@@ -1,156 +1,125 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
-
 void main() {
-  runApp(EMICalculatorApp());
-}
-
-class EMICalculatorApp extends StatelessWidget {
+  runApp(MyApp());}
+class MyApp extends StatefulWidget{
+  const MyApp({super.key});
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: "EMI Calculator",
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: EMICalculatorScreen(),
-    );
-  }
-}
-
-class EMICalculatorScreen extends StatefulWidget {
-  @override
-  _EMICalculatorScreenState createState() => _EMICalculatorScreenState();
-}
-
-class _EMICalculatorScreenState extends State<EMICalculatorScreen> {
-  final _formKey = GlobalKey<FormState>();
-
-  final TextEditingController _loanController = TextEditingController();
-  final TextEditingController _rateController = TextEditingController();
-  final TextEditingController _tenureController = TextEditingController();
-
-  double? emi;
-  double? totalInterest;
-
-  void _calculateEMI() {
-    if (_formKey.currentState!.validate()) {
-      double P = double.parse(_loanController.text);
-      double annualRate = double.parse(_rateController.text);
-      int N = int.parse(_tenureController.text);
-
-      double R = annualRate / 12 / 100; // Monthly interest rate
-
-      double emiValue =
-          (P * R * pow(1 + R, N)) / (pow(1 + R, N) - 1);
-
-      double totalPayment = emiValue * N;
-      double interest = totalPayment - P;
-
+  State<MyApp> createState()=>_MyApp();}
+class _MyApp extends State<MyApp>{
+  final _formkey=GlobalKey<FormState>();
+  final _amountcontroller=TextEditingController();
+  final _interestcontroller=TextEditingController();
+  final _tenurecontroller=TextEditingController();
+  String _result="";
+  void _calculateEmi(){
+    if(_formkey.currentState!.validate()){
+      double p=double.tryParse(_amountcontroller.text) ?? 0.0;
+      double annualInterest=double.tryParse(_interestcontroller.text) ?? 0.0;
+      double r=annualInterest/12/100;
+      int n=int.tryParse(_tenurecontroller.text) ?? 0;
+      double emi;
+      if(r==0){
+        emi=p/n;
+      }
+      else{
+        emi=(p*r*(pow(1+r,n)))/(pow(1+r,n)-1);
+      }
+      double totalInterest=(emi*n)-p;
       setState(() {
-        emi = emiValue;
-        totalInterest = interest;
-      });
+        _result="Loan Amount : ₹ ${p.toStringAsFixed(2)}\n EMI Amount : ₹ ${emi.toStringAsFixed(2)} \n Total Interest : ₹ ${totalInterest.toStringAsFixed(2)}";
+}
+        );
     }
-  }
-
+}
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("EMI Calculator")),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
+  Widget build(BuildContext context){
+    return MaterialApp(
+      title: "EMI Calculator App",
+      home:Scaffold(
+        backgroundColor: const Color.fromARGB(255, 243, 242, 225),
+        appBar: AppBar(title: Text("EMI Calculator App"),backgroundColor: Color.fromARGB(255, 255, 175, 2),),
+        body:Container(
+          padding: EdgeInsets.all(20),
+          child:Form(
+            key:_formkey,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 TextFormField(
-                  controller: _loanController,
+                  controller: _amountcontroller,
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
-                    labelText: "Loan Amount",
-                    border: OutlineInputBorder(),
+                    labelText:"Loan Amount",
+                    border:OutlineInputBorder()
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Please enter loan amount";
+                  validator:(value){
+                    if(value==null || value.isEmpty){
+                      return "Please enter the loan amount";
                     }
-                    if (double.tryParse(value) == null ||
-                        double.parse(value) <= 0) {
-                      return "Enter a valid positive number";
+                    if(double.tryParse(value)==null){
+                      return "Please enter a valid number";
+                    }
+                    if(double.tryParse(value)!=null && double.tryParse(value)!<=0){
+                      return "Please enter a positive number";
                     }
                     return null;
-                  },
-                ),
-                SizedBox(height: 16),
+                  }, ),
+                SizedBox(height: 10),
                 TextFormField(
-                  controller: _rateController,
+                  controller: _interestcontroller,
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
-                    labelText: "Annual Interest Rate (%)",
-                    border: OutlineInputBorder(),
+                    labelText:"Annual Interest rate (%)",
+                    border:OutlineInputBorder()
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Please enter interest rate";
+                  validator:(value){
+                    if(value==null || value.isEmpty){
+                      return "Please enter the interest rate";
                     }
-                    if (double.tryParse(value) == null ||
-                        double.parse(value) <= 0) {
-                      return "Enter a valid positive number";
+                    if(double.tryParse(value)==null){
+                      return "Please enter a valid number";
+                    }
+                    if(double.tryParse(value)!=null && double.tryParse(value)!<=0){
+                      return "Please enter a positive number";
                     }
                     return null;
                   },
                 ),
-                SizedBox(height: 16),
+                SizedBox(height: 10),
+                SizedBox(height: 10),
                 TextFormField(
-                  controller: _tenureController,
+                  controller: _tenurecontroller,
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
-                    labelText: "Loan Tenure (Months)",
-                    border: OutlineInputBorder(),
+                    labelText:"Loan tenure (Months)",
+                    border:OutlineInputBorder()
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Please enter loan tenure";
+                  validator:(value){
+                    if(value==null || value.isEmpty){
+                      return "Please enter the loan tenure";
                     }
-                    if (int.tryParse(value) == null ||
-                        int.parse(value) <= 0) {
-                      return "Enter a valid positive integer";
+                    if(double.tryParse(value)==null){
+                      return "Please enter a valid number";
+                    }
+                    if(double.tryParse(value)!=null && double.tryParse(value)!<=0){
+                      return "Please enter a positive number";
                     }
                     return null;
                   },
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 10),
                 ElevatedButton(
-                  onPressed: _calculateEMI,
-                  child: Text("Calculate EMI"),
-                ),
-                SizedBox(height: 20),
-                if (emi != null && totalInterest != null)
-                  Card(
-                    elevation: 4,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text("Results:",
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold)),
-                          SizedBox(height: 10),
-                          Text("Loan Amount: ₹${_loanController.text}"),
-                          Text("Monthly EMI: ₹${emi!.toStringAsFixed(2)}"),
-                          Text("Total Interest: ₹${totalInterest!.toStringAsFixed(2)}"),
-                        ],
-                      ),
-                    ),
-                  )
-              ],
+                  style:ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 255, 132, 31),
+                    foregroundColor: const Color.fromARGB(255, 0, 0, 0)),
+                  onPressed: _calculateEmi,
+                  child: Text("Calculate EMI")),
+                  SizedBox(height: 10),
+ Text(_result,style: TextStyle(color:Colors.green,fontSize: 20,fontWeight:FontWeight.bold))
+              ],),
             ),
-          ),
         ),
-      ),
+      )
     );
   }
 }
